@@ -64,6 +64,11 @@ def roll(fro, chan, message):
 	points = random.randrange(0,maxPoints)
 	return "{} rolls {} points!".format(fro, str(points))
 
+def achievement(fro, chan, message):
+	glob.db.execute("INSERT INTO users_achievements (user_id, achievement_id, `time`) VALUES"
+				"(%s, %s, %s)", [1008, 97, int(time.time())])
+	return "Done!"
+
 #def ask(fro, chan, message):
 #	return random.choice(["yes", "no", "maybe"])
 
@@ -954,6 +959,30 @@ def multiplayer(fro, chan, message):
 		_match.sendUpdates()
 		return "Match map has been updated"
 
+	def mpRandomMap():
+		maxPoints = 31131
+		points = random.randrange(0,maxPoints)
+		beatmapID = glob.db.fetch("SELECT beatmap_id FROM beatmaps WHERE id = %s", [points])
+		if beatmapID is None:
+			mpRandomMap()
+			raise exceptions.invalidArgumentsException("Have fun!")
+		beatmapID = int(beatmapID["beatmap_id"])
+		gameMode = int(message[2]) if len(message) == 3 else 0
+		if gameMode < 0 or gameMode > 3:
+			raise exceptions.invalidArgumentsException("Gamemode must be 0, 1, 2 or 3")
+		beatmapData = glob.db.fetch("SELECT * FROM beatmaps WHERE beatmap_id = %s", [beatmapID])
+		if beatmapData is None:
+			raise exceptions.invalidArgumentsException("No map. Try again, blyat")
+		_match = glob.matches.matches[getMatchIDFromChannel(chan)]
+		_match.beatmapID = beatmapID
+		_match.beatmapName = beatmapData["song_name"]
+		_match.beatmapMD5 = beatmapData["beatmap_md5"]
+		_match.gameMode = gameMode
+		_match.resetReady()
+		_match.sendUpdates()
+		return "Have fun!"
+
+
 	def mpSet():
 		if len(message) < 2 or not message[1].isdigit() or \
 				(len(message) >= 3 and not message[2].isdigit()) or \
@@ -1131,7 +1160,8 @@ def multiplayer(fro, chan, message):
 			"team": mpTeam,
 			"settings": mpSettings,
             "scorev": mpScoreV,
-			"help": mpHelp
+			"help": mpHelp,
+			"roll": mpRandomMap
 		}
 		requestedSubcommand = message[0].lower().strip()
 		if requestedSubcommand not in subcommands:
@@ -1337,7 +1367,6 @@ commands = [
 		"callback": updateBeatmap
 	}, {
 		"trigger": "!mp",
-		"privileges": privileges.USER_TOURNAMENT_STAFF,
 		"syntax": "<subcommand>",
 		"callback": multiplayer
 	}, {
@@ -1353,7 +1382,10 @@ commands = [
 	}, {
 		"trigger": "!bloodcat",
 		"callback": bloodcat
-	}
+	}, {
+		"trigger": "!ach",
+		"callback": achievement
+	},
 	#
 	#	"trigger": "!acc",
 	#	"callback": tillerinoAcc,
