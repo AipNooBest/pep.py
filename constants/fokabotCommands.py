@@ -960,7 +960,8 @@ def multiplayer(fro, chan, message):
 		return "Match map has been updated"
 
 	def mpRandomMap():
-		maxPoints = 31131
+		#ok google, how to Python?
+		maxPoints = int(glob.db.fetch("SELECT id FROM beatmaps ORDER BY id DESC LIMIT 1)["id"])
 		points = random.randrange(0,maxPoints)
 		beatmapID = glob.db.fetch("SELECT beatmap_id FROM beatmaps WHERE id = %s", [points])
 		if beatmapID is None:
@@ -968,11 +969,7 @@ def multiplayer(fro, chan, message):
 			raise exceptions.invalidArgumentsException("Have fun!")
 		beatmapID = int(beatmapID["beatmap_id"])
 		gameMode = int(message[2]) if len(message) == 3 else 0
-		if gameMode < 0 or gameMode > 3:
-			raise exceptions.invalidArgumentsException("Gamemode must be 0, 1, 2 or 3")
 		beatmapData = glob.db.fetch("SELECT * FROM beatmaps WHERE beatmap_id = %s", [beatmapID])
-		if beatmapData is None:
-			raise exceptions.invalidArgumentsException("No map. Try again, blyat")
 		_match = glob.matches.matches[getMatchIDFromChannel(chan)]
 		_match.beatmapID = beatmapID
 		_match.beatmapName = beatmapData["song_name"]
@@ -981,7 +978,6 @@ def multiplayer(fro, chan, message):
 		_match.resetReady()
 		_match.sendUpdates()
 		return "Have fun!"
-
 
 	def mpSet():
 		if len(message) < 2 or not message[1].isdigit() or \
