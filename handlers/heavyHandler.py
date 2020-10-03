@@ -12,6 +12,7 @@ class handler(requestsManager.asyncRequestHandler):
 			self.write("Nope")
 			return
 		time.sleep(0.5)
+		#wtf
 		self.write("meemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeemmeem")
 		self.set_status(200)
 		self.add_header("cho-token", "tua madre")

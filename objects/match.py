@@ -450,17 +450,17 @@ class match:
 
 		# Set vinse id if needed
 		chanName = "#multi_{}".format(self.matchID)
-		if self.vinseID is None:
-			self.vinseID = (int(time.time()) // (60 * 15)) << 32 | self.matchID
-			chat.sendMessage(glob.BOT_NAME, chanName, "Match history available [{} here]".format(
-				"https://multi.bigtu.vip/match/{}".format(self.vinseID)
-			))
+		#if self.vinseID is None:
+			#self.vinseID = (int(time.time()) // (60 * 15)) << 32 | self.matchID
+			#chat.sendMessage(glob.BOT_NAME, chanName, "Match history available [{} here]".format(
+			#	"https://multi.bigtu.vip/match/{}".format(self.vinseID)
+			#))
 		if not self.bloodcatAlert:
 			chat.sendMessage(
 				glob.BOT_NAME,
 				chanName,
 				"and uh... in case you're playing unranked or broken maps "
-				"that are now available through ripple's osu!direct, you can "
+				"that are now available through Debiki's osu!direct, you can "
 				"type '!bloodcat' in the chat to get a download link for the "
 				"currently selected map from Bloodcat! If osu!direct is not working, "
 				"You can still use '!beatconnect' as a mirror too! "
